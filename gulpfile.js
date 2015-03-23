@@ -2,7 +2,9 @@ var gulp         = require('gulp');
 var concat       = require('gulp-concat');
 var csscomb      = require('gulp-csscomb');
 var csso         = require('gulp-csso');
-var autoprefixer = require('gulp-autoprefixer');
+var postcss      = require('gulp-postcss');
+var autoprefixer = require('autoprefixer-core');
+var mqpacker     = require('css-mqpacker');
 var sequence     = require('run-sequence').use(gulp);
 
 var LIB_JS_FILES = [
@@ -68,12 +70,14 @@ gulp.task('css:lib', function () {
 });
 
 gulp.task('css:app', function () {
+  var processors = [
+    autoprefixer({browsers: ['last 2 version']}),
+    mqpacker
+  ];
+
   gulp.src(APP_CSS_FILES)
     .pipe(concat('app.min.css'))
-    .pipe(autoprefixer({
-      browsers: ['last 2 versions'],
-      cascade: false
-    }))
+    .pipe(postcss(processors))
     .pipe(csscomb())
     .pipe(csso())
     .pipe(gulp.dest('_public/css'));
