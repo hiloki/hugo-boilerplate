@@ -1,6 +1,9 @@
-var gulp     = require('gulp');
-var concat   = require('gulp-concat');
-var sequence = require('run-sequence').use(gulp);
+var gulp         = require('gulp');
+var concat       = require('gulp-concat');
+var csscomb      = require('gulp-csscomb');
+var csso         = require('gulp-csso');
+var autoprefixer = require('gulp-autoprefixer');
+var sequence     = require('run-sequence').use(gulp);
 
 var LIB_JS_FILES = [
   'bower_components/jquery/dist/jquery.min.js'
@@ -20,7 +23,6 @@ var APP_CSS_FILES = [
 ];
 
 gulp.task('watch', function () {
-
   gulp.watch(APP_JS_FILES, function () {
     gulp.start('js:app');
   });
@@ -43,14 +45,12 @@ gulp.task('css', function () {
 });
 
 gulp.task('js:lib', function () {
-
   gulp.src(LIB_JS_FILES)
     .pipe(concat('lib.min.js'))
     .pipe(gulp.dest('_public/js'));
 });
 
 gulp.task('js:app', function () {
-
   var uglify = require('gulp-uglify');
 
   gulp.src(APP_JS_FILES)
@@ -60,10 +60,6 @@ gulp.task('js:app', function () {
 });
 
 gulp.task('css:lib', function () {
-
-  var csscomb = require('gulp-csscomb');
-  var csso    = require('gulp-csso');
-
   gulp.src(LIB_CSS_FILES)
     .pipe(concat('lib.min.css'))
     .pipe(csscomb())
@@ -72,12 +68,12 @@ gulp.task('css:lib', function () {
 });
 
 gulp.task('css:app', function () {
-
-  var csscomb = require('gulp-csscomb');
-  var csso    = require('gulp-csso');
-
   gulp.src(APP_CSS_FILES)
     .pipe(concat('app.min.css'))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false
+    }))
     .pipe(csscomb())
     .pipe(csso())
     .pipe(gulp.dest('_public/css'));
